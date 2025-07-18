@@ -57,3 +57,41 @@ INSERT INTO OrderDetail (oID, pID, odQTY) VALUES
 (2, 3, 10),
 (3, 1, 1),
 (3, 5, 5);
+
+
+select oID, oDate, oTotalPrice as oPrice
+from `Order`;
+
+
+SELECT DISTINCT C.cID, C.cName, P.pName
+FROM Customer C
+JOIN `Order` O ON C.cID = O.cID
+JOIN OrderDetail OD ON O.oID = OD.oID
+JOIN Product P ON OD.pID = P.pID;
+
+
+SELECT cID, cName
+FROM Customer
+WHERE cID NOT IN (
+    SELECT DISTINCT cID
+    FROM `Order`
+);
+
+
+SELECT 
+    O.oID,
+    O.oDate,
+    SUM(OD.odQTY * P.pPrice) AS oPrice
+FROM `Order` O
+JOIN OrderDetail OD ON O.oID = OD.oID
+JOIN Product P ON OD.pID = P.pID
+GROUP BY O.oID, O.oDate;
+
+
+UPDATE `Order` O
+SET oTotalPrice = (
+    SELECT SUM(OD.odQTY * P.pPrice)
+    FROM OrderDetail OD
+    JOIN Product P ON OD.pID = P.pID
+    WHERE OD.oID = O.oID
+);
