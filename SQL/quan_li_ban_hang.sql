@@ -1,16 +1,11 @@
-CREATE DATABASE IF NOT EXISTS QuanLyBanHang;
+
+CREATE DATABASE QuanLyBanHang;
 USE QuanLyBanHang;
 
 CREATE TABLE Customer (
     cID INT PRIMARY KEY,
-    cName NVARCHAR(100),
+    cName VARCHAR(100),
     cAge INT
-);
-
-CREATE TABLE Product (
-    pID INT PRIMARY KEY,
-    pName NVARCHAR(100),
-    pPrice DECIMAL(18,2)
 );
 
 CREATE TABLE `Order` (
@@ -19,6 +14,12 @@ CREATE TABLE `Order` (
     oDate DATE,
     oTotalPrice DECIMAL(18,2),
     FOREIGN KEY (cID) REFERENCES Customer(cID)
+);
+
+CREATE TABLE Product (
+    pID INT PRIMARY KEY,
+    pName VARCHAR(100),
+    pPrice DECIMAL(18,2)
 );
 
 CREATE TABLE OrderDetail (
@@ -30,3 +31,29 @@ CREATE TABLE OrderDetail (
     FOREIGN KEY (pID) REFERENCES Product(pID)
 );
 
+INSERT INTO Customer (cID, cName, cAge) VALUES
+(1, 'Minh Quan', 10),
+(2, 'Ngoc Oanh', 20),
+(3, 'Hong Ha', 50);
+
+INSERT INTO `Order` (oID, cID, oDate, oTotalPrice) VALUES
+(1, 1, '2006-03-21', NULL),
+(2, 2, '2006-03-23', NULL),
+(3, 1, '2006-03-16', NULL);
+
+INSERT INTO Product (pID, pName, pPrice) VALUES
+(1, 'May Giat', 3),
+(2, 'Tu Lanh', 5),
+(3, 'Dieu Hoa', 7),
+(4, 'Quat', 2),
+(5, 'Bep Dien', 2);
+
+INSERT INTO OrderDetail (oID, pID, odQTY) VALUES
+(1, 1, 3),
+(1, 3, 7),
+(1, 4, 2),
+(2, 1, 1),
+(2, 2, 1),
+(2, 3, 10),
+(3, 1, 1),
+(3, 5, 5);
