@@ -98,3 +98,26 @@ order by m.Mark desc, s.StudentName asc;
 
 
 
+
+
+-- luyện các hàm thông dụng trong SQL 
+SELECT * 
+FROM Subject
+WHERE credit = (
+    SELECT MAX(credit) FROM Subject
+);
+
+SELECT s.*
+FROM Subject s
+JOIN Mark m ON s.subject_id = m.subject_id
+WHERE m.mark = (
+    SELECT MAX(mark) FROM Mark
+);
+
+SELECT st.student_id, st.student_name, AVG(m.mark) AS avg_mark
+FROM Student st
+JOIN Mark m ON st.student_id = m.student_id
+GROUP BY st.student_id, st.student_name
+ORDER BY avg_mark DESC;
+
+
