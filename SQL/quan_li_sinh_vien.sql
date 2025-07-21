@@ -114,10 +114,10 @@ WHERE m.mark = (
     SELECT MAX(mark) FROM Mark
 );
 
-SELECT st.student_id, st.student_name, AVG(m.mark) AS avg_mark
+SELECT st.student_id,  AVG(m.mark) AS avg_mark
 FROM Student st
 JOIN Mark m ON st.student_id = m.student_id
-GROUP BY st.student_id, st.student_name
+GROUP BY st.student_id
 ORDER BY avg_mark DESC;
 
 
