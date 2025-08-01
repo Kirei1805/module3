@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phim Hoạt Hình</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .nav {
+            text-align: center;
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        .nav a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #000;
+            border-right: 1px solid #999;
+            padding: 0 10px;
+        }
+
+        .nav a:last-child {
+            border-right: none;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 10px;
+        }
+
+        .left {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+        }
+
+        .center-wrapper {
+            flex: 3;
+            min-width: 300px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-thumb {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .video-thumb .item {
+            background-color: #f4f4f4;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .video-thumb img {
+            width: 100%;
+            height: auto;
+        }
+
+        iframe {
+            width: 100%;
+            height: 300px;
+        }
+
+        .desc {
+            margin-top: 15px;
+        }
+
+        .desc h3 {
+            margin: 10px 0 5px;
+        }
+
+        .desc p {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 14px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left, .center-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo-Doremon.svg/1200px-Logo-Doremon.svg.png" alt="Phim Hoạt Hình" height="40">
+    </div>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+    <a href="#">Phim hoạt hình</a>
+    <a href="#">Phim yêu thích</a>
+    <a href="#">Nhân vật</a>
+    <a href="#">Góp ý</a>
+</div>
+
+<!-- Main content -->
+<div class="container">
+    <!-- Left column -->
+    <div class="left">
+        <div class="video-thumb">
+            <div class="item">
+                <img src="https://i.ytimg.com/vi/0i5w2YeMR30/mqdefault.jpg" alt="">
+                <div>Welcom đến với khách sạn Nobi<br><small>5,147,528 lượt xem<br>Channel Fun</small></div>
+            </div>
+            <div class="item">
+                <img src="https://i.ytimg.com/vi/YGJZ3XUCZmM/mqdefault.jpg" alt="">
+                <div>Suneo khổng lồ<br><small>5,147,528 lượt xem<br>Doreamon Vietsub</small></div>
+            </div>
+            <div class="item">
+                <img src="https://i.ytimg.com/vi/NxjwEa8xPtI/mqdefault.jpg" alt="">
+                <div>Cởi điều khiển vật<br><small>5,147,528 lượt xem<br>Doreamon Vietsub</small></div>
+            </div>
+            <div class="item">
+                <img src="https://i.ytimg.com/vi/JPSbt0nOjzA/mqdefault.jpg" alt="">
+                <div>Chiếc máy tạo kẹo bông<br><small>5,147,528 lượt xem<br>Doreamon Vietsub</small></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Center column with video + description -->
+    <div class="center-wrapper">
+        <iframe src="https://www.youtube.com/embed/K2MQzYF5JZ4" frameborder="0" allowfullscreen></iframe>
+        <h3>Tớ là Mari</h3>
+        <small>5,147,528 lượt xem<br>Tác giả</small>
+
+        <!-- Mô tả phim bên dưới -->
+        <div class="desc">
+            <h3>Mô tả</h3>
+            <p>Bộ phim kể về câu chuyện Thạch Sanh chém Trăn Tinh cứu dân, bắn Đại Bàng cứu công chúa, từng tiếng đàn nhân nghĩa dẹp tan quân xâm lăng. Nhưng cuộc đời Thạch Sanh luôn bị tên Lý Thông làm cho điêu đứng. Cuối cùng chính nghĩa đã thắng...</p>
+            <p>Bộ phim kể về câu chuyện Thạch Sanh chém Trăn Tinh cứu dân, bắn Đại Bàng cứu công chúa, từng tiếng đàn nhân nghĩa dẹp tan quân xâm lăng. Nhưng cuộc đời Thạch Sanh luôn bị tên Lý Thông làm cho điêu đứng. Cuối cùng chính nghĩa đã thắng...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    © 2017 - Thiết kế web bởi trang hoathinhvn.net
+</footer>
+
+</body>
+</html>
