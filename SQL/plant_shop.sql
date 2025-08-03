@@ -8,7 +8,7 @@ CREATE TABLE users (
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE,
     role ENUM('customer', 'admin') DEFAULT 'customer',
-    full_name VARCHAR(100),
+    full_name VARCHAR(100),	
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -129,3 +129,5 @@ CREATE TABLE admin_logs (
     log_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES users(id)
 );
+
+
