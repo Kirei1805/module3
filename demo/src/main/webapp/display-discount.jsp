@@ -15,4 +15,4 @@
     
     <p><a href="index.jsp">Calculate Another Discount</a></p>
 </body>
-</html> 
+</html>
