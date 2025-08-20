@@ -1,7 +1,9 @@
 package loipt.example.product.repository;
 
 import loipt.example.product.model.Product;
-import loipt.example.product.model.ProductStatistics;
+import loipt.example.product.dto.PageResultDTO;
+import loipt.example.product.dto.ProductDTO;
+import loipt.example.product.dto.ProductSearchDTO;
 import loipt.example.product.util.DatabaseConnection;
 
 import java.sql.*;
@@ -179,26 +181,270 @@ public class ProductRepositoryImpl implements ProductRepository {
         return false;
     }
 
+    // ========= Các method mới: phân trang, tìm kiếm nâng cao, và DTO =========
+
     @Override
-    public ProductStatistics getProductStatistics() {
-        String callSql = "{CALL GetProductStatistics()}";
-        
+    public List<Product> findAllWithPagination(int offset, int limit) {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM products ORDER BY Id LIMIT ? OFFSET ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             CallableStatement stmt = conn.prepareCall(callSql);
-             ResultSet rs = stmt.executeQuery()) {
-            
-            if (rs.next()) {
-                ProductStatistics stats = new ProductStatistics();
-                stats.setTotalProducts(rs.getInt("totalProducts"));
-                stats.setTotalQuantity(rs.getInt("totalQuantity"));
-                stats.setAveragePrice(rs.getDouble("averagePrice"));
-                stats.setInStock(rs.getInt("inStock"));
-                stats.setOutOfStock(rs.getInt("outOfStock"));
-                return stats;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                products.add(mapProduct(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new ProductStatistics();
+        return products;
+    }
+
+    @Override
+    public List<Product> searchProducts(String keyword, int categoryId, double minPrice, double maxPrice, int offset, int limit) {
+        List<Product> products = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND productName LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (categoryId > 0) {
+            sql.append(" AND categoryId = ?");
+            params.add(categoryId);
+        }
+        if (minPrice > 0) {
+            sql.append(" AND productPrice >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice < Double.MAX_VALUE) {
+            sql.append(" AND productPrice <= ?");
+            params.add(maxPrice);
+        }
+        sql.append(" ORDER BY Id LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                products.add(mapProduct(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }
+
+    @Override
+    public int getTotalProducts() {
+        String sql = "SELECT COUNT(*) AS total FROM products";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt("total");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public int getTotalProductsBySearch(String keyword, int categoryId, double minPrice, double maxPrice) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) AS total FROM products WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND productName LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (categoryId > 0) {
+            sql.append(" AND categoryId = ?");
+            params.add(categoryId);
+        }
+        if (minPrice > 0) {
+            sql.append(" AND productPrice >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice < Double.MAX_VALUE) {
+            sql.append(" AND productPrice <= ?");
+            params.add(maxPrice);
+        }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt("total");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public List<ProductDTO> findAllWithCategoryInfo() {
+        List<ProductDTO> results = new ArrayList<>();
+        String sql = "SELECT p.*, c.categoryCode, c.categoryName, c.description AS categoryDescription, c.status AS categoryStatus " +
+                "FROM products p LEFT JOIN categories c ON p.categoryId = c.Id ORDER BY p.Id";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                results.add(mapProductDTO(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    @Override
+    public ProductDTO findByIdWithCategoryInfo(int id) {
+        String sql = "SELECT p.*, c.categoryCode, c.categoryName, c.description AS categoryDescription, c.status AS categoryStatus " +
+                "FROM products p LEFT JOIN categories c ON p.categoryId = c.Id WHERE p.Id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return mapProductDTO(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public PageResultDTO<ProductDTO> findAllWithCategoryInfoPaged(int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        List<ProductDTO> data = new ArrayList<>();
+        String sql = "SELECT p.*, c.categoryCode, c.categoryName, c.description AS categoryDescription, c.status AS categoryStatus " +
+                "FROM products p LEFT JOIN categories c ON p.categoryId = c.Id ORDER BY p.Id LIMIT ? OFFSET ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, pageSize);
+            stmt.setInt(2, offset);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) data.add(mapProductDTO(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        int total = getTotalProducts();
+        return new PageResultDTO<>(data, page, pageSize, total);
+    }
+
+    @Override
+    public PageResultDTO<ProductDTO> searchProductsWithCategoryInfo(ProductSearchDTO searchDTO) {
+        List<ProductDTO> data = searchProductsWithCategoryInfo(
+                searchDTO.getKeyword(),
+                searchDTO.getCategoryId(),
+                searchDTO.getMinPrice(),
+                searchDTO.getMaxPrice(),
+                searchDTO.getOffset(),
+                searchDTO.getLimit()
+        );
+        int total = getTotalProductsBySearchWithCategoryInfo(
+                searchDTO.getKeyword(),
+                searchDTO.getCategoryId(),
+                searchDTO.getMinPrice(),
+                searchDTO.getMaxPrice()
+        );
+        return new PageResultDTO<>(data, searchDTO.getPage(), searchDTO.getPageSize(), total);
+    }
+
+    @Override
+    public List<ProductDTO> searchProductsWithCategoryInfo(String keyword, int categoryId, double minPrice, double maxPrice, int offset, int limit) {
+        List<ProductDTO> results = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.*, c.categoryCode, c.categoryName, c.description AS categoryDescription, c.status AS categoryStatus " +
+                "FROM products p LEFT JOIN categories c ON p.categoryId = c.Id WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND p.productName LIKE ?");
+            params.add("%" + keyword.trim() + "%");
+        }
+        if (categoryId > 0) {
+            sql.append(" AND p.categoryId = ?");
+            params.add(categoryId);
+        }
+        if (minPrice > 0) {
+            sql.append(" AND p.productPrice >= ?");
+            params.add(minPrice);
+        }
+        if (maxPrice < Double.MAX_VALUE) {
+            sql.append(" AND p.productPrice <= ?");
+            params.add(maxPrice);
+        }
+        sql.append(" ORDER BY p.Id LIMIT ? OFFSET ?");
+        params.add(limit);
+        params.add(offset);
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) results.add(mapProductDTO(rs));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    @Override
+    public int getTotalProductsWithCategoryInfo() {
+        return getTotalProducts();
+    }
+
+    @Override
+    public int getTotalProductsBySearchWithCategoryInfo(String keyword, int categoryId, double minPrice, double maxPrice) {
+        return getTotalProductsBySearch(keyword, categoryId, minPrice, maxPrice);
+    }
+
+    // ========= Helpers =========
+    private Product mapProduct(ResultSet rs) throws SQLException {
+        Product product = new Product();
+        product.setId(rs.getInt("Id"));
+        product.setProductCode(rs.getString("productCode"));
+        product.setProductName(rs.getString("productName"));
+        product.setProductPrice(rs.getDouble("productPrice"));
+        product.setProductAmount(rs.getInt("productAmount"));
+        product.setProductDescription(rs.getString("productDescription"));
+        product.setProductStatus(rs.getString("productStatus"));
+        product.setCategoryId(rs.getInt("categoryId"));
+        return product;
+    }
+
+    private ProductDTO mapProductDTO(ResultSet rs) throws SQLException {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(rs.getInt("Id"));
+        dto.setProductCode(rs.getString("productCode"));
+        dto.setProductName(rs.getString("productName"));
+        dto.setProductPrice(rs.getDouble("productPrice"));
+        dto.setProductAmount(rs.getInt("productAmount"));
+        dto.setProductDescription(rs.getString("productDescription"));
+        dto.setProductStatus(rs.getString("productStatus"));
+        dto.setCategoryId(rs.getInt("categoryId"));
+        // category info (may be null)
+        dto.setCategoryCode(getStringSafe(rs, "categoryCode"));
+        dto.setCategoryName(getStringSafe(rs, "categoryName"));
+        dto.setCategoryDescription(getStringSafe(rs, "categoryDescription"));
+        dto.setCategoryStatus(getStringSafe(rs, "categoryStatus"));
+        return dto;
+    }
+
+    private String getStringSafe(ResultSet rs, String column) {
+        try {
+            String value = rs.getString(column);
+            return value;
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }

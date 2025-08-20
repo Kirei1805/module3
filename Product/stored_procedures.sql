@@ -9,7 +9,6 @@ DROP PROCEDURE IF EXISTS AddProduct;
 DROP PROCEDURE IF EXISTS UpdateProduct;
 DROP PROCEDURE IF EXISTS DeleteProduct;
 DROP PROCEDURE IF EXISTS CheckProductExists;
-DROP PROCEDURE IF EXISTS GetProductStatistics;
 DROP PROCEDURE IF EXISTS GetAllCategories;
 DROP PROCEDURE IF EXISTS GetCategoryById;
 DROP PROCEDURE IF EXISTS AddCategory;
@@ -119,19 +118,6 @@ BEGIN
 END //
 DELIMITER ;
 
--- 8. Stored Procedure để lấy thống kê sản phẩm
-DELIMITER //
-CREATE PROCEDURE GetProductStatistics()
-BEGIN
-    SELECT 
-        COUNT(*) AS totalProducts,
-        SUM(productAmount) AS totalQuantity,
-        AVG(productPrice) AS averagePrice,
-        COUNT(CASE WHEN productStatus = 'Còn hàng' THEN 1 END) AS inStock,
-        COUNT(CASE WHEN productStatus = 'Hết hàng' THEN 1 END) AS outOfStock
-    FROM products;
-END //
-DELIMITER ;
 
 -- 9. Stored Procedure để lấy tất cả categories
 DELIMITER //

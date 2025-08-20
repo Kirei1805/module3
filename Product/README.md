@@ -13,7 +13,11 @@ Product/
 │   ├── model/
 │   │   ├── Product.java
 │   │   ├── Category.java
-│   │   └── ProductStatistics.java
+│   │   └── dto/
+│   │       ├── ProductDTO.java
+│   │       ├── CategoryDTO.java
+│   │       ├── ProductSearchDTO.java
+│   │       └── PageResultDTO.java
 │   ├── repository/
 │   │   ├── ProductRepository.java
 │   │   ├── ProductRepositoryImpl.java
@@ -22,10 +26,8 @@ Product/
 │   ├── service/
 │   │   ├── ProductService.java
 │   │   ├── ProductServiceImpl.java
-│   │   └── StatisticsService.java
 │   ├── controller/
 │   │   ├── ProductServlet.java
-│   │   └── StatisticsServlet.java
 │   └── util/
 │       └── DatabaseConnection.java
 └── src/main/webapp/product/
@@ -34,7 +36,7 @@ Product/
     ├── edit.jsp
     ├── view.jsp
     ├── search.jsp
-    └── statistics.jsp
+    
 ```
 
 ## 🚀 Cài đặt và chạy
@@ -79,12 +81,9 @@ private static final String PASSWORD = "your_password";
 - ✅ **Chọn category hiện có**: Dropdown chọn từ danh sách
 - ✅ **Foreign key constraint**: Đảm bảo tính toàn vẹn dữ liệu
 
-### 3. Thống kê
-- ✅ Thống kê tổng số sản phẩm
-- ✅ Thống kê tổng số lượng
-- ✅ Giá trung bình
-- ✅ Số sản phẩm còn/hết hàng
-- ✅ Biểu đồ tỷ lệ tồn kho
+### 3. DTO và Phân trang
+- ✅ Trả về `ProductDTO` kèm thông tin `Category`
+- ✅ `PageResultDTO` cho phân trang danh sách và kết quả tìm kiếm
 
 ## 🔄 Transaction tích hợp trong ProductServiceImpl
 

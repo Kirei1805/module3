@@ -2,6 +2,9 @@ package loipt.example.product.controller;
 
 import loipt.example.product.model.Category;
 import loipt.example.product.model.Product;
+import loipt.example.product.dto.PageResultDTO;
+import loipt.example.product.dto.ProductDTO;
+import loipt.example.product.dto.ProductSearchDTO;
 import loipt.example.product.service.ProductService;
 import loipt.example.product.service.ProductServiceImpl;
 
@@ -63,6 +66,9 @@ public class ProductServlet extends HttpServlet {
             case "edit":
                 updateProduct(request, response);
                 break;
+            case "delete":
+                deleteProduct(request, response);
+                break;
             case "search":
                 searchProduct(request, response);
                 break;
@@ -74,8 +80,18 @@ public class ProductServlet extends HttpServlet {
 
     private void listProducts(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Product> list = productService.getAllProducts();
-        request.setAttribute("products", list);
+        int page = 1;
+        int pageSize = 10;
+        try {
+            page = Integer.parseInt(request.getParameter("page"));
+        } catch (Exception ignored) {}
+        try {
+            pageSize = Integer.parseInt(request.getParameter("pageSize"));
+        } catch (Exception ignored) {}
+
+        PageResultDTO<ProductDTO> result = ((ProductServiceImpl) productService).getProductsPaged(page, pageSize);
+        request.setAttribute("page", result);
+        request.setAttribute("products", result.getData());
         RequestDispatcher dispatcher = request.getRequestDispatcher("product/list.jsp");
         dispatcher.forward(request, response);
     }
@@ -200,7 +216,7 @@ public class ProductServlet extends HttpServlet {
     private void showViewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Product product = productService.getProductById(id);
+        ProductDTO product = ((ProductServiceImpl) productService).getProductWithCategoryInfoById(id);
         request.setAttribute("product", product);
         RequestDispatcher dispatcher = request.getRequestDispatcher("product/view.jsp");
         dispatcher.forward(request, response);
@@ -215,8 +231,23 @@ public class ProductServlet extends HttpServlet {
     private void searchProduct(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String keyword = request.getParameter("keyword");
-        List<Product> results = productService.searchProducts(keyword);
-        request.setAttribute("results", results);
+        int categoryId = 0;
+        double minPrice = 0;
+        double maxPrice = Double.MAX_VALUE;
+        String status = request.getParameter("status");
+        int page = 1;
+        int pageSize = 10;
+
+        try { categoryId = Integer.parseInt(request.getParameter("categoryId")); } catch (Exception ignored) {}
+        try { minPrice = Double.parseDouble(request.getParameter("minPrice")); } catch (Exception ignored) {}
+        try { maxPrice = Double.parseDouble(request.getParameter("maxPrice")); } catch (Exception ignored) {}
+        try { page = Integer.parseInt(request.getParameter("page")); } catch (Exception ignored) {}
+        try { pageSize = Integer.parseInt(request.getParameter("pageSize")); } catch (Exception ignored) {}
+
+        ProductSearchDTO searchDTO = new ProductSearchDTO(keyword, categoryId, minPrice, maxPrice, status, page, pageSize, "Id", "ASC");
+        PageResultDTO<ProductDTO> result = ((ProductServiceImpl) productService).searchProducts(searchDTO);
+        request.setAttribute("page", result);
+        request.setAttribute("results", result.getData());
         RequestDispatcher dispatcher = request.getRequestDispatcher("product/search.jsp");
         dispatcher.forward(request, response);
     }

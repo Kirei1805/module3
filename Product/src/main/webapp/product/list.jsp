@@ -28,8 +28,6 @@
         <div>
             <a href="/products?action=create" class="btn btn-success">Thêm mới</a>
             <a href="/products?action=search" class="btn btn-info">Tìm kiếm</a>
-            <a href="/statistics" class="btn btn-warning">Thống kê</a>
-            <a href="/transaction" class="btn btn-secondary">Test Transaction</a>
         </div>
     </div>
 
@@ -52,7 +50,7 @@
                     <td>${product.id}</td>
                     <td>${product.productCode}</td>
                     <td><strong>${product.productName}</strong></td>
-                    <td>${product.categoryId}</td>
+                    <td>${product.categoryName}</td>
                     <td>${String.format("%,.0f", product.productPrice)} VNĐ</td>
                     <td>${product.productAmount}</td>
                     <td>

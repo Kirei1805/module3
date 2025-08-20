@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="loipt.example.product.model.Product" %>
+<%@ page import="loipt.example.product.dto.ProductDTO" %>
 <%
-    Product product = (Product) request.getAttribute("product");
+    ProductDTO product = (ProductDTO) request.getAttribute("product");
 %>
 <html>
 <head>
@@ -39,6 +39,11 @@
             <span class="detail-value"><strong><%= product.getProductName() %></strong></span>
         </div>
         
+        <div class="detail-item">
+            <span class="detail-label">Danh mục:</span>
+            <span class="detail-value"><%= product.getCategoryName() %></span>
+        </div>
+
         <div class="detail-item">
             <span class="detail-label">Giá:</span>
             <span class="detail-value"><strong><%= String.format("%,.0f", product.getProductPrice()) %> VNĐ</strong></span>

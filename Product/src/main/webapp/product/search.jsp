@@ -1,7 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page import="java.util.List, loipt.example.product.model.Product" %>
+<%@ page import="java.util.List, loipt.example.product.dto.ProductDTO, loipt.example.product.dto.PageResultDTO" %>
 <%
-    List<Product> products = (List<Product>) request.getAttribute("results");
+    List<ProductDTO> products = (List<ProductDTO>) request.getAttribute("results");
+    PageResultDTO<ProductDTO> page = (PageResultDTO<ProductDTO>) request.getAttribute("page");
     String keyword = request.getParameter("keyword");
 %>
 <html>
@@ -57,6 +58,7 @@
                         <th>ID</th>
                         <th>Mã SP</th>
                         <th>Tên sản phẩm</th>
+                        <th>Danh mục</th>
                         <th>Giá (VNĐ)</th>
                         <th>Số lượng</th>
                         <th>Trạng thái</th>
@@ -64,11 +66,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% for (Product p : products) { %>
+                    <% for (ProductDTO p : products) { %>
                     <tr>
                         <td><%= p.getId() %></td>
                         <td><%= p.getProductCode() %></td>
                         <td><strong><%= p.getProductName() %></strong></td>
+                        <td><%= p.getCategoryName() %></td>
                         <td><%= String.format("%,.0f", p.getProductPrice()) %> VNĐ</td>
                         <td><%= p.getProductAmount() %></td>
                         <td>
@@ -92,9 +95,15 @@
                 </tbody>
             </table>
             
+            <% if (page != null) { %>
+            <div class="result-info">
+                Trang <strong><%= page.getCurrentPage() %></strong> / <strong><%= page.getTotalPages() %></strong> - Tổng: <strong><%= page.getTotalRecords() %></strong> sản phẩm.
+            </div>
+            <% } else { %>
             <div class="result-info">
                 Tìm thấy <strong><%= products.size() %></strong> sản phẩm phù hợp.
             </div>
+            <% } %>
         <% } else if (keyword != null && !keyword.trim().isEmpty()) { %>
             <div class="no-result">
                 Không tìm thấy sản phẩm nào phù hợp với từ khóa "<%= keyword %>".

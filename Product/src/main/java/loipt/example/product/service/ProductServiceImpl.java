@@ -2,6 +2,9 @@ package loipt.example.product.service;
 
 import loipt.example.product.model.Category;
 import loipt.example.product.model.Product;
+import loipt.example.product.dto.PageResultDTO;
+import loipt.example.product.dto.ProductDTO;
+import loipt.example.product.dto.ProductSearchDTO;
 import loipt.example.product.repository.ProductRepository;
 import loipt.example.product.repository.ProductRepositoryImpl;
 import loipt.example.product.util.DatabaseConnection;
@@ -25,6 +28,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> searchProducts(String keyword) {
         return productRepository.searchByName(keyword);
+    }
+
+    @Override
+    public boolean checkProductExists(int id) {
+        return productRepository.checkProductExists(id);
     }
 
     @Override
@@ -326,6 +334,28 @@ public class ProductServiceImpl implements ProductService {
             }
         }
         return 0;
+    }
+
+    // ========== Service methods dùng DTO ==========
+
+    @Override
+    public List<ProductDTO> getAllProductsWithCategoryInfo() {
+        return productRepository.findAllWithCategoryInfo();
+    }
+
+    @Override
+    public ProductDTO getProductWithCategoryInfoById(int id) {
+        return productRepository.findByIdWithCategoryInfo(id);
+    }
+
+    @Override
+    public PageResultDTO<ProductDTO> getProductsPaged(int page, int pageSize) {
+        return productRepository.findAllWithCategoryInfoPaged(page, pageSize);
+    }
+
+    @Override
+    public PageResultDTO<ProductDTO> searchProducts(ProductSearchDTO searchDTO) {
+        return productRepository.searchProductsWithCategoryInfo(searchDTO);
     }
 }
 
