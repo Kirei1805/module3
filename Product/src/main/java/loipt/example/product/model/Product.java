@@ -2,34 +2,113 @@ package loipt.example.product.model;
 
 public class Product {
     private int id;
-    private String name;
-    private double price;
-    private String description;
-    private String manufacturer;
+    private String productCode;
+    private String productName;
+    private double productPrice;
+    private int productAmount;
+    private String productDescription;
+    private String productStatus;
+    private int categoryId;
+    private Category category; // Để hiển thị thông tin category
 
     public Product() {}
 
-    public Product(int id, String name, double price, String description, String manufacturer) {
+    public Product(int id, String productCode, String productName, double productPrice, 
+                   int productAmount, String productDescription, String productStatus, int categoryId) {
         this.id = id;
-        this.name = name;
-        this.price = price;
-        this.description = description;
-        this.manufacturer = manufacturer;
+        this.productCode = productCode;
+        this.productName = productName;
+        this.productPrice = productPrice;
+        this.productAmount = productAmount;
+        this.productDescription = productDescription;
+        this.productStatus = productStatus;
+        this.categoryId = categoryId;
     }
 
-    // Getter & Setter
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    // Getters and Setters
+    public int getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getProductCode() {
+        return productCode;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
 
-    public String getManufacturer() { return manufacturer; }
-    public void setManufacturer(String manufacturer) { this.manufacturer = manufacturer; }
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public double getProductPrice() {
+        return productPrice;
+    }
+
+    public void setProductPrice(double productPrice) {
+        this.productPrice = productPrice;
+    }
+
+    public int getProductAmount() {
+        return productAmount;
+    }
+
+    public void setProductAmount(int productAmount) {
+        this.productAmount = productAmount;
+    }
+
+    public String getProductDescription() {
+        return productDescription;
+    }
+
+    public void setProductDescription(String productDescription) {
+        this.productDescription = productDescription;
+    }
+
+    public String getProductStatus() {
+        return productStatus;
+    }
+
+    public void setProductStatus(String productStatus) {
+        this.productStatus = productStatus;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", productCode='" + productCode + '\'' +
+                ", productName='" + productName + '\'' +
+                ", productPrice=" + productPrice +
+                ", productAmount=" + productAmount +
+                ", productDescription='" + productDescription + '\'' +
+                ", productStatus='" + productStatus + '\'' +
+                ", categoryId=" + categoryId +
+                '}';
+    }
 }
