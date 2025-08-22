@@ -2,6 +2,10 @@
 CREATE DATABASE IF NOT EXISTS demo;
 USE demo;
 
+-- Đảm bảo kết nối sử dụng UTF-8
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- Tạo bảng categories
 CREATE TABLE IF NOT EXISTS categories (
     Id INT AUTO_INCREMENT PRIMARY KEY,
